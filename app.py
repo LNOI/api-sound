@@ -4,8 +4,6 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from dotenv import load_dotenv
 from uuid import uuid4
 from huggingsound import SpeechRecognitionModel
-import librosa
-import soundfile as sf
 from loguru import logger
 import os
 app = FastAPI()
@@ -18,14 +16,6 @@ os.makedirs("./audio", exist_ok=True)
 
 async def transcribe_audio(audio_paths: List[str]):
     start_time = time()
-    for audio_path in audio_paths:
-        y, sr = librosa.load(audio_path, sr=None)  # Giữ nguyên sample rate gốc
-        if sr != 16000:
-            print("Resampling audio to 16000 Hz")
-        y_resampled = librosa.resample(y, orig_sr=sr, target_sr=16000)
-        sf.write(audio_path, y_resampled, 16000)  # Lưu lại file mới
-
-    
     transcriptions = model.transcribe(audio_paths)
     end_time = time()
     print(f"Time taken: {end_time - start_time} seconds")
